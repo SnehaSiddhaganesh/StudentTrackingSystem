@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+temp_upload_*
+database/*.db-journal
+database/*.db-wal
+database/*.db-shm
