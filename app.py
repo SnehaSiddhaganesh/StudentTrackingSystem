@@ -137,6 +137,9 @@ if input_mode == "📹 Upload Video File/Image":
         type=["mp4", "avi", "mov", "mkv", "jpg", "jpeg", "png"],
         disabled=st.session_state.is_running
     )
+    cam_photo = st.sidebar.camera_input("📷 Take Browser Webcam Photo", disabled=st.session_state.is_running)
+    if cam_photo is not None and uploaded_file is None:
+        uploaded_file = cam_photo
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### ⚙️ Detection Parameters")
@@ -375,10 +378,20 @@ if st.session_state.is_running:
         video_src = VideoSource('webcam', webcam_id)
 
     if video_src is None or not video_src.is_opened:
-        video_status_placeholder.error(
-            f"Unable to access video stream ({input_mode}). "
-            "Please check device permissions or select Demo video."
-        )
+        if input_mode == "📷 Live Webcam Feed":
+            video_status_placeholder.error(
+                "⚠️ **Streamlit Cloud Hardware Limitation**: Direct OpenCV live webcam (`cv2.VideoCapture(0)`) requires a local hardware camera physically connected to the computer running Python. "
+                "Because Streamlit Cloud runs on a remote Linux server in a data center, it has no hardware webcam connected.\n\n"
+                "👉 **Solutions on Streamlit Cloud**:\n"
+                "1. Select **🖼️ Demo Classroom Image** or **🎥 Demo Classroom Video** in the sidebar to test full 3-student tracking.\n"
+                "2. Select **📹 Upload Video File/Image** to upload a video/photo or use **📷 Take Browser Webcam Photo** snapshot directly from your browser!\n"
+                "3. To stream continuous live webcam video using your local hardware camera, run the app locally on your PC using `streamlit run app.py`."
+            )
+        else:
+            video_status_placeholder.error(
+                f"Unable to access video stream ({input_mode}). "
+                "Please check file format or select Demo video."
+            )
         st.session_state.is_running = False
     else:
         # Initialize pipeline modules
